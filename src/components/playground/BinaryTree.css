@@ -1,0 +1,174 @@
+#react-tree-vis {
+  --line-color: #ccc;
+  --line-hover-color: #5f6674;
+  --line-radius: 5px;
+
+  --node-border: none;
+  --node-border-radius: 200px;
+  --node-bg-color: #fff;
+  --node-font-color: #666;
+  --node-shadow: -5px -5px 20px #fff, 5px 5px 20px #babecc;
+  --node-text-shadow: none;
+  /* FIXME: Undocumented */
+  --node-font-size: 20px;
+  --node-font-family: arial, verdana, tahoma;
+  --node-avl-height-font-size: 13px;
+  --node-red-bg-color: #da6060;
+  --node-black-bg-color: #acacac;
+  /* FIXME: Undocumented over */
+
+  /* highlighted node */
+  --node-hl-border: none;
+  --node-hl-bg-color: #fff;
+  --node-hl-font-color: #222;
+  --node-hl-shadow: -5px -5px 20px #fff, 5px 5px 20px #babecc;
+  --node-hl-text-shadow: 0 0 15px yellow;
+  --node-hover-border: none;
+  --node-hover-bg-color: #fff;
+  --node-hover-font-color: #002574;
+  --node-hover-shadow: -1px -1px 5px #fff, 1px 1px 5px #babecc;
+  --node-hover-text-shadow: none;
+
+  --node-null-font-color: #7c7c7c2f;
+  --node-null-hover-font-color: #00aa00;
+
+  --transition: 0.5s;
+}
+
+#react-tree-vis ul {
+  padding: 0;
+  padding-top: 20px;
+  position: relative;
+  transition: all var(--transition);
+}
+
+#react-tree-vis > ul {
+  width: fit-content;
+  margin: 0 auto;
+}
+
+#react-tree-vis li {
+  float: left;
+  text-align: center;
+  list-style-type: none;
+  position: relative;
+  padding: 10px 1px 0 1px;
+  transition: all var(--transition);
+}
+
+/* Line Styles */
+#react-tree-vis li::before,
+#react-tree-vis li::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 50%;
+  border-top: 1px solid var(--line-color);
+  width: 50%;
+  height: 10px;
+  transition: all var(--transition);
+}
+
+#react-tree-vis li::after {
+  right: auto;
+  left: 50%;
+  border-left: 1px solid var(--line-color);
+}
+
+#react-tree-vis li:last-child::before {
+  border-right: 1px solid var(--line-color);
+  border-radius: 0 var(--line-radius) 0 0;
+}
+
+#react-tree-vis li:first-child::after {
+  border-radius: var(--line-radius) 0 0 0;
+}
+
+#react-tree-vis ul ul::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  border-left: 1px solid var(--line-color);
+  width: 0;
+  height: 20px;
+  transition: all var(--transition);
+}
+
+#react-tree-vis li:only-child::after,
+#react-tree-vis li:only-child::before {
+  display: none;
+}
+
+#react-tree-vis li:only-child {
+  padding-top: 0;
+}
+
+#react-tree-vis li:first-child::before,
+#react-tree-vis li:last-child::after {
+  border: 0 none;
+}
+
+/* Node Styles starts */
+#react-tree-vis li div {
+  padding: 6px 12px;
+  text-decoration: none;
+  color: var(--node-font-color);
+  font-family: var(--node-font-family);
+  font-size: var(--node-font-size);
+  display: inline-block;
+  box-shadow: var(--node-shadow);
+  text-shadow: var(--node-text-shadow);
+  border-radius: var(--node-border-radius);
+  border: var(--node-border);
+  background-color: var(--node-bg-color);
+  transition: all var(--transition);
+}
+
+#react-tree-vis li div.end {
+  color: #c20000;
+}
+
+#react-tree-vis li div.red {
+  background-color: var(--node-red-bg-color);
+}
+
+#react-tree-vis li div.black {
+  background-color: var(--node-black-bg-color);
+}
+
+#react-tree-vis li div.highlight {
+  background-color: var(--node-hl-bg-color);
+  border: var(--node-hl-border);
+  box-shadow: var(--node-hl-shadow);
+  color: var(--node-hl-font-color);
+  text-shadow: var(--node-hl-text-shadow);
+}
+
+/* Hover Styles starts */
+#react-tree-vis li div:hover {
+  border: var(--node-hover-border);
+  color: var(--node-hover-font-color);
+  background-color: var(--node-hover-bg-color);
+  box-shadow: var(--node-hover-shadow);
+  text-shadow: var(--node-hover-text-shadow);
+}
+
+#react-tree-vis li div:hover + ul li::after,
+#react-tree-vis li div:hover + ul li::before,
+#react-tree-vis li div:hover + ul::before,
+#react-tree-vis li div:hover + ul ul::before {
+  border-color: var(--line-hover-color);
+}
+
+#react-tree-vis li.null div {
+  color: var(--node-null-font-color);
+}
+
+#react-tree-vis li.null div:hover {
+  color: var(--node-null-hover-font-color);
+}
+
+#react-tree-vis .height {
+  font-size: var(--node-avl-height-font-size);
+}

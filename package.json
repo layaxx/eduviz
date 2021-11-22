@@ -10,9 +10,14 @@
     "@types/node": "^12.0.0",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
+    "bootstrap": "^5.1.3",
     "react": "^17.0.2",
+    "react-copy-to-clipboard": "^5.0.4",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "react-tree-vis": "file:../dependencies/react-tree-vis/dist",
+    "reactstrap": "^9.0.1",
+    "reactstrap-confirm": "^1.3.2",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
@@ -20,7 +25,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "reload": "del -r .\\node_modules\\react-tree-vis\\ ; cp  -r ..\\dependencies\\react-tree-vis\\dist\\ .\\node_modules\\react-tree-vis\\"
   },
   "eslintConfig": {
     "extends": [
