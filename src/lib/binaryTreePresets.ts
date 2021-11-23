@@ -1,7 +1,4 @@
-export type TreePreset = {
-  name: string
-  string: string
-}
+import { TreePreset } from "./binaryTreeTypes"
 
 export const treePresets: TreePreset[] = [
   {

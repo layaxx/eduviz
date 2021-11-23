@@ -1,3 +1,5 @@
+import { TraversalOption } from "../../lib/binaryTreeTypes"
+
 export default class BinaryTreeNode {
   left: BinaryTreeNode | null
   right: BinaryTreeNode | null
@@ -44,17 +46,17 @@ export default class BinaryTreeNode {
       : null
   }
 
-  serialize(): string {
-    return JSON.stringify({
-      value: this.value,
-      status: this.status,
-      right: this.right ? this.right.serialize() : "null",
-      left: this.left ? this.left.serialize() : "null",
-    })
-  }
+  traverse(mode: TraversalOption) {
+    const leftResult: string = this.left ? this.left.traverse(mode) : ""
+    const rightResult: string = this.right ? this.right.traverse(mode) : ""
 
-  setLeftNode(left: BinaryTreeNode | null) {
-    this.left = left
+    const templates = {
+      [TraversalOption.PREORDER]: `${this.value} ${leftResult} ${rightResult}`,
+      [TraversalOption.INORDER]: `${leftResult} ${this.value} ${rightResult}`,
+      [TraversalOption.POSTORDER]: `${leftResult} ${rightResult} ${this.value}`,
+    }
+
+    return templates[mode]
   }
 
   setStatus(id: string, newStatus: string) {

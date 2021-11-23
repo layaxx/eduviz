@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { Button, Container, Input, InputGroup } from "reactstrap"
 import BinaryTreeNode from "./BinaryTreeNode"
 import confirm from "reactstrap-confirm"
@@ -6,8 +6,13 @@ import { CopyToClipboard } from "react-copy-to-clipboard"
 import "./BinaryTree.css"
 import { exportTreeAsString } from "../../lib/binaryTreeHelpers"
 import LoadTreeSection from "./LoadTreeSection"
+import { TraversalOption } from "../../lib/binaryTreeTypes"
 
-export default function BinaryTree() {
+type Props = {
+  hidden: boolean
+}
+
+export default function BinaryTree({ hidden }: Props) {
   const rootID = "0"
 
   const [activeID, setActiveID] = React.useState<string | undefined>(rootID)
@@ -24,6 +29,14 @@ export default function BinaryTree() {
   const [newValue, setNewValue] = React.useState("")
   const [newStatus, setNewStatus] = React.useState("")
 
+  const [traversalOption, setTraversalOption] = useState<TraversalOption>(
+    TraversalOption.PREORDER
+  )
+
+  const [traversalOutput, setTraversalOutput] = useState("")
+
+  const traversalOptions = Object.values(TraversalOption)
+
   React.useEffect(() => {
     if (activeID) {
       console.debug("changed activeID to ", activeID)
@@ -34,6 +47,10 @@ export default function BinaryTree() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeID])
+
+  if (hidden) {
+    return null
+  }
 
   return (
     <>
@@ -114,6 +131,38 @@ export default function BinaryTree() {
         <CopyToClipboard text={exportTreeAsString(tree)}>
           <Button>Copy serialized Tree to Clipboard</Button>
         </CopyToClipboard>
+
+        <InputGroup>
+          <Input
+            name="select"
+            type="select"
+            value={traversalOption}
+            onChange={(event) =>
+              setTraversalOption(event.target.value as TraversalOption)
+            }
+          >
+            {traversalOptions.map((option, index) => (
+              <option key={index}>{option}</option>
+            ))}
+          </Input>
+          <Button
+            onClick={() => setTraversalOutput(tree.traverse(traversalOption))}
+          >
+            Traverse Tree
+          </Button>
+        </InputGroup>
+        {!!traversalOutput && (
+          <Container className="d-flex">
+            <Button
+              close
+              onClick={() => setTraversalOutput("")}
+              size="sm"
+            ></Button>
+            <p>
+              <span className="fw-bold">Output:</span> {traversalOutput}
+            </p>{" "}
+          </Container>
+        )}
       </Container>
 
       <hr />

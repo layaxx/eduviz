@@ -10,7 +10,8 @@ import {
   Input,
 } from "reactstrap"
 import { loadTreeFromString } from "../../lib/binaryTreeHelpers"
-import { treePresets, TreePreset } from "../../lib/treePresets"
+import { treePresets } from "../../lib/binaryTreePresets"
+import { TreePreset } from "../../lib/binaryTreeTypes"
 import BinaryTreeNode from "./BinaryTreeNode"
 
 export default function LoadTreeSection({
@@ -56,7 +57,9 @@ export default function LoadTreeSection({
     <Container>
       <Container className="d-flex justify-content-between p-0">
         <h2>Load Tree</h2>
-        <Button id="toggleLoadSection">Toggle</Button>
+        <Button outline id="toggleLoadSection" size="sm">
+          Toggle
+        </Button>
       </Container>
       <UncontrolledCollapse toggler="#toggleLoadSection">
         <Row>
