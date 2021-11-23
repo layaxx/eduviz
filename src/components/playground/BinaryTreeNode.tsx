@@ -74,6 +74,22 @@ export default class BinaryTreeNode {
     this.right?.clearHighlights()
   }
 
+  remove(id: string, force: boolean = false): BinaryTreeNode | null {
+    if (this.id === id) {
+      if (force) {
+        return null
+      } else if (this.left === null) {
+        return this.right
+      } else {
+        return this.left
+      }
+    } else {
+      this.left = this.left?.remove(id, force) ?? null
+      this.right = this.right?.remove(id, force) ?? null
+    }
+    return this
+  }
+
   setIsHighlighted(id: string, bool: boolean) {
     if (this.id === id) {
       this.isHighlighted = bool
@@ -96,19 +112,29 @@ export default class BinaryTreeNode {
     }
   }
 
-  render() {
+  render(hideEmptyNodes: boolean = false) {
     const isEnd = this.left === null && this.right === null
     if (isEnd) {
       return (
-        <li
-          id={"node-" + this.id}
-          className={`null add `}
-          onClick={() => this.callback(this.id)}
-        >
-          <div className={this.isHighlighted ? "highlight" : ""}>null</div>
-        </li>
+        !hideEmptyNodes && (
+          <li
+            id={"node-" + this.id}
+            className={`null add `}
+            onClick={() => this.callback(this.id)}
+          >
+            <div className={this.isHighlighted ? "highlight" : ""}>null</div>
+          </li>
+        )
       )
     } else {
+      const hasRealChildren = !(
+        this.left &&
+        this.left.left === null &&
+        this.left.right === null &&
+        this.right &&
+        this.right.left === null &&
+        this.right.right === null
+      )
       return (
         <li key={this.id} id={"node-" + this.id}>
           <div
@@ -118,9 +144,12 @@ export default class BinaryTreeNode {
             {this.value}
           </div>
           <small style={{ display: "block" }}>{this.status}</small>
-          <ul>
-            {this.left?.render()} {this.right?.render()}
-          </ul>
+          {(hasRealChildren || !hideEmptyNodes) && (
+            <ul>
+              {this.left?.render(hideEmptyNodes)}{" "}
+              {this.right?.render(hideEmptyNodes)}
+            </ul>
+          )}
         </li>
       )
     }

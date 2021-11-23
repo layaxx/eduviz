@@ -1,5 +1,12 @@
 import React, { useState } from "react"
-import { Button, Container, Input, InputGroup } from "reactstrap"
+import {
+  Button,
+  Container,
+  FormGroup,
+  Input,
+  InputGroup,
+  Label,
+} from "reactstrap"
 import BinaryTreeNode from "./BinaryTreeNode"
 import confirm from "reactstrap-confirm"
 import { CopyToClipboard } from "react-copy-to-clipboard"
@@ -21,10 +28,12 @@ export default function BinaryTree({ hidden }: Props) {
     setActiveID(id)
   }
 
+  const [hideEmptyNodes, setHideEmptyNodes] = useState(false)
+
   const [tree, setTree] = React.useState(
     new BinaryTreeNode(rootID, "", callback)
   )
-  const [JSX, setJSX] = React.useState(tree.render())
+  const [JSX, setJSX] = React.useState(tree.render(hideEmptyNodes))
 
   const [newValue, setNewValue] = React.useState("")
   const [newStatus, setNewStatus] = React.useState("")
@@ -43,7 +52,7 @@ export default function BinaryTree({ hidden }: Props) {
       tree.clearHighlights()
       tree.setIsHighlighted(activeID, true)
       setTree(tree)
-      setJSX(tree.render())
+      setJSX(tree.render(hideEmptyNodes))
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeID])
@@ -56,7 +65,7 @@ export default function BinaryTree({ hidden }: Props) {
     <>
       <LoadTreeSection
         setTree={(tree) => {
-          setJSX(tree.render())
+          setJSX(tree.render(hideEmptyNodes))
           setTree(tree)
         }}
         callback={callback}
@@ -77,7 +86,7 @@ export default function BinaryTree({ hidden }: Props) {
               if (activeID && newValue) {
                 tree.setValueOfNode(activeID, newValue)
                 setTree(tree)
-                setJSX(tree.render())
+                setJSX(tree.render(hideEmptyNodes))
               } else {
                 alert("no active Node found or no/empty new value")
               }
@@ -97,7 +106,7 @@ export default function BinaryTree({ hidden }: Props) {
               if (activeID) {
                 tree.setStatus(activeID, newStatus)
                 setTree(tree)
-                setJSX(tree.render())
+                setJSX(tree.render(hideEmptyNodes))
               } else {
                 alert("no active Node found")
               }
@@ -119,7 +128,7 @@ export default function BinaryTree({ hidden }: Props) {
               if (isConfirmed) {
                 const newTree = new BinaryTreeNode(rootID, "", callback)
                 setTree(newTree)
-                setJSX(newTree.render())
+                setJSX(newTree.render(hideEmptyNodes))
                 setActiveID(rootID)
               }
             })
@@ -128,9 +137,37 @@ export default function BinaryTree({ hidden }: Props) {
           reset Tree
         </Button>
 
+        <Button
+          color="danger"
+          onClick={() => {
+            if (!activeID) {
+              return
+            }
+            const newTree =
+              tree.remove(activeID) ?? new BinaryTreeNode(rootID, "", callback)
+            setTree(newTree)
+            setJSX(newTree.render(hideEmptyNodes))
+            setActiveID(rootID)
+          }}
+        >
+          remove active Node
+        </Button>
+
         <CopyToClipboard text={exportTreeAsString(tree)}>
           <Button>Copy serialized Tree to Clipboard</Button>
         </CopyToClipboard>
+
+        <FormGroup check inline>
+          <Input
+            type="checkbox"
+            checked={hideEmptyNodes}
+            onChange={() => {
+              setJSX(tree.render(!hideEmptyNodes))
+              setHideEmptyNodes(!hideEmptyNodes)
+            }}
+          />{" "}
+          <Label check>Hide empty nodes</Label>
+        </FormGroup>
 
         <InputGroup>
           <Input
