@@ -18,7 +18,7 @@
   /* FIXME: Undocumented over */
 
   /* highlighted node */
-  --node-hl-border: none;
+  --node-hl-border: 3px solid red;
   --node-hl-bg-color: #fff;
   --node-hl-font-color: #222;
   --node-hl-shadow: -5px -5px 20px #fff, 5px 5px 20px #babecc;
@@ -139,7 +139,7 @@
 
 #react-tree-vis li div.highlight {
   background-color: var(--node-hl-bg-color);
-  border: var(--node-hl-border);
+  outline: var(--node-hl-border);
   box-shadow: var(--node-hl-shadow);
   color: var(--node-hl-font-color);
   text-shadow: var(--node-hl-text-shadow);
