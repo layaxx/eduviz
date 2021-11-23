@@ -4,12 +4,14 @@ import { Button, Nav, NavItem, NavLink } from "reactstrap"
 
 import "./App.css"
 import BinaryTree from "./components/playground/BinaryTree"
+import BinaryTreeTheory from "./components/theory/BinaryTree"
+import BinaryTreeTraversal from "./components/theory/BinaryTreeTraversal"
 
 export default function App() {
   const content = {
-    pg_BinaryTree: null,
-    t_binaryTreeAllgemein: null,
-    t_binaryTreeTraversal: null,
+    pg_BinaryTree: null, // this is toggled differently to allow its state to be kept
+    t_binaryTreeAllgemein: <BinaryTreeTheory />,
+    t_binaryTreeTraversal: <BinaryTreeTraversal />,
   } as const
 
   const [activeContent, setActiveContent] =
