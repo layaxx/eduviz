@@ -1,11 +1,13 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import {
   Button,
+  Col,
   Container,
   FormGroup,
   Input,
   InputGroup,
   Label,
+  Row,
 } from "reactstrap"
 import BinaryTreeNode from "./BinaryTreeNode"
 import confirm from "reactstrap-confirm"
@@ -24,8 +26,11 @@ export default function BinaryTree({ hidden }: Props) {
 
   const [activeID, setActiveID] = React.useState<string | undefined>(rootID)
 
+  const textInput = useRef<null | any>(null)
+
   const callback = (id: string) => {
     setActiveID(id)
+    textInput.current?.focus()
   }
 
   const [hideEmptyNodes, setHideEmptyNodes] = useState(false)
@@ -37,6 +42,8 @@ export default function BinaryTree({ hidden }: Props) {
 
   const [newValue, setNewValue] = React.useState("")
   const [newStatus, setNewStatus] = React.useState("")
+
+  const [zoomLevel, setZoomLevel] = useState(1)
 
   const [traversalOption, setTraversalOption] = useState<TraversalOption>(
     TraversalOption.PREORDER
@@ -79,6 +86,7 @@ export default function BinaryTree({ hidden }: Props) {
             onChange={(event) => setNewValue(event.target.value)}
             type="text"
             placeholder="value for node"
+            ref={textInput}
           ></Input>
 
           <Button
@@ -157,18 +165,6 @@ export default function BinaryTree({ hidden }: Props) {
           <Button>Copy serialized Tree to Clipboard</Button>
         </CopyToClipboard>
 
-        <FormGroup check inline>
-          <Input
-            type="checkbox"
-            checked={hideEmptyNodes}
-            onChange={() => {
-              setJSX(tree.render(!hideEmptyNodes))
-              setHideEmptyNodes(!hideEmptyNodes)
-            }}
-          />{" "}
-          <Label check>Hide empty nodes</Label>
-        </FormGroup>
-
         <InputGroup>
           <Input
             name="select"
@@ -197,14 +193,47 @@ export default function BinaryTree({ hidden }: Props) {
             ></Button>
             <p>
               <span className="fw-bold">Output:</span> {traversalOutput}
-            </p>{" "}
+            </p>
           </Container>
         )}
+
+        <Row>
+          <Col>
+            <FormGroup>
+              <Label for="zoomLevel">
+                Zoom Level [does not work in Firefox]
+              </Label>
+              <Input
+                id="zoomLevel"
+                name="range"
+                type="range"
+                min={0.1}
+                max={10}
+                step={0.1}
+                value={zoomLevel}
+                onChange={(event) => setZoomLevel(Number(event.target.value))}
+              />
+            </FormGroup>
+          </Col>
+          <Col style={{ alignSelf: "center" }}>
+            <FormGroup check>
+              <Input
+                type="checkbox"
+                checked={hideEmptyNodes}
+                onChange={() => {
+                  setJSX(tree.render(!hideEmptyNodes))
+                  setHideEmptyNodes(!hideEmptyNodes)
+                }}
+              />
+              <Label check>Hide empty nodes</Label>
+            </FormGroup>
+          </Col>
+        </Row>
       </Container>
 
       <hr />
 
-      <div id="react-tree-vis">
+      <div id="react-tree-vis" style={{ zoom: zoomLevel }}>
         <ul>{JSX}</ul>
       </div>
     </>
