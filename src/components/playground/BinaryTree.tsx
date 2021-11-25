@@ -208,7 +208,7 @@ export default function BinaryTree({ hidden }: Props) {
                 name="range"
                 type="range"
                 min={0.1}
-                max={10}
+                max={4}
                 step={0.1}
                 value={zoomLevel}
                 onChange={(event) => setZoomLevel(Number(event.target.value))}

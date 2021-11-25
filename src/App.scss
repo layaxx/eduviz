@@ -1,0 +1,80 @@
+$sidebar-bg-color: #0c1e35;
+$submenu-bg-color: rgba(255, 255, 255, 0.05);
+$submenu-bg-color-collapsed: rgba(#0c1e35, 0.95);
+$sidebar-color: #b3b8d4;
+$highlight-color: #dee2ec;
+$icon-bg-color: rgba(255, 255, 255, 0.05);
+$icon-size: 35px;
+
+@import "~react-pro-sidebar/dist/scss/styles.scss";
+body {
+  margin: 0;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  height: 100%;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  position: relative;
+
+  .pro-sidebar .pro-menu .pro-menu-item.active {
+    font-weight: 700;
+    border-left: 5px solid #ccc;
+  }
+
+  .copyleft {
+    display: inline-block;
+    transform: rotate(180deg);
+  }
+  .copyleft::after {
+    content: "\00a9";
+  }
+
+  .btn-toggle {
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    background: #353535;
+    color: #fff;
+    text-align: center;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    display: none;
+  }
+
+  main {
+    padding: 24px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    overflow-y: scroll;
+
+    footer {
+      margin-top: auto;
+      color: #888;
+      text-align: center;
+      a {
+        text-decoration: none;
+        color: #888;
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-md) {
+    overflow-x: hidden;
+    .btn-toggle {
+      display: flex;
+    }
+  }
+}
