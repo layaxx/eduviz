@@ -22,9 +22,14 @@ body {
   display: flex;
   position: relative;
 
-  .pro-sidebar .pro-menu .pro-menu-item.active {
-    font-weight: 700;
-    border-left: 5px solid #ccc;
+  .pro-sidebar {
+    .pro-menu-item {
+      font-weight: 400;
+    }
+    .pro-menu-item.active {
+      font-weight: 700;
+      border-left: 5px solid #ccc;
+    }
   }
 
   .copyleft {
@@ -37,17 +42,27 @@ body {
 
   .btn-toggle {
     cursor: pointer;
-    width: 35px;
-    height: 35px;
+    width: 3rem;
+    height: 3rem;
+    position: absolute;
     background: #353535;
     color: #fff;
     text-align: center;
     border-radius: 50%;
-    display: flex;
+    display: none;
     align-items: center;
     justify-content: center;
-    font-size: 15px;
-    display: none;
+    font-size: 1rem;
+    z-index: 9999;
+    left: 2rem;
+
+    -webkit-box-shadow: 5px 5px 21px 1px rgba(0, 0, 0, 0.28);
+    box-shadow: 5px 5px 21px 1px rgba(0, 0, 0, 0.28);
+
+    :hover {
+      -webkit-box-shadow: 5px 5px 21px 1px rgba(0, 0, 0, 0.67);
+      box-shadow: 5px 5px 21px 1px rgba(0, 0, 0, 0.67);
+    }
   }
 
   main {
@@ -75,6 +90,9 @@ body {
     overflow-x: hidden;
     .btn-toggle {
       display: flex;
+    }
+    main > article {
+      margin-top: 3rem;
     }
   }
 }

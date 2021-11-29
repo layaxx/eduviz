@@ -1,5 +1,3 @@
-import React from "react"
-
 type Props = {
   handleToggleSidebar: (v: boolean) => void
   children: JSX.Element

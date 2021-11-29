@@ -13,15 +13,14 @@ import BinaryTreeNode from "./BinaryTreeNode"
 import confirm from "reactstrap-confirm"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import "./BinaryTree.css"
-import { exportTreeAsString } from "../../lib/binaryTreeHelpers"
+import {
+  exportTreeAsString,
+  loadTreeFromString,
+} from "../../lib/binaryTreeHelpers"
 import LoadTreeSection from "./LoadTreeSection"
 import { TraversalOption } from "../../lib/binaryTreeTypes"
 
-type Props = {
-  hidden: boolean
-}
-
-export default function BinaryTree({ hidden }: Props) {
+export default function BinaryTree() {
   const rootID = "0"
 
   const [activeID, setActiveID] = React.useState<string | undefined>(rootID)
@@ -53,117 +52,142 @@ export default function BinaryTree({ hidden }: Props) {
 
   const traversalOptions = Object.values(TraversalOption)
 
+  const updateTree = (newTree: BinaryTreeNode) => {
+    if (!newTree.render) {
+      const { id, value, status, left, right } = newTree
+      newTree = new BinaryTreeNode(id, value, callback, status, left, right)
+      newTree.setIsHighlighted(rootID, true)
+    }
+    setTree(newTree)
+    setJSX(newTree.render(hideEmptyNodes))
+  }
+
   React.useEffect(() => {
     if (activeID) {
       console.debug("changed activeID to ", activeID)
       tree.clearHighlights()
       tree.setIsHighlighted(activeID, true)
-      setTree(tree)
-      setJSX(tree.render(hideEmptyNodes))
+      updateTree(tree)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeID])
 
-  if (hidden) {
-    return null
-  }
+  React.useEffect(() => {
+    const treeStringFromLocalStorage =
+      window.localStorage.getItem("stored-tree")
+    if (treeStringFromLocalStorage) {
+      updateTree(loadTreeFromString(treeStringFromLocalStorage))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
+    window.localStorage.setItem("stored-tree", exportTreeAsString(tree))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exportTreeAsString(tree)])
 
   return (
     <>
-      <LoadTreeSection
-        setTree={(tree) => {
-          setJSX(tree.render(hideEmptyNodes))
-          setTree(tree)
-        }}
-        callback={callback}
-      />
+      <h2>Binary Tree Playground</h2>
+      <LoadTreeSection updateTree={updateTree} />
 
-      <Container>
-        <h2>Tree controls</h2>
-        <InputGroup>
-          <Input
-            value={newValue}
-            onChange={(event) => setNewValue(event.target.value)}
-            type="text"
-            placeholder="value for node"
-            ref={textInput}
-          ></Input>
+      <Container className="border-bottom">
+        <h3>Tree controls</h3>
 
-          <Button
-            onClick={() => {
-              if (activeID && newValue) {
-                tree.setValueOfNode(activeID, newValue)
-                setTree(tree)
-                setJSX(tree.render(hideEmptyNodes))
-              } else {
-                alert("no active Node found or no/empty new value")
-              }
-            }}
-          >
-            Set active Node´s value
-          </Button>
-        </InputGroup>
-
-        <InputGroup>
-          <Input
-            value={newStatus}
-            onChange={(event) => setNewStatus(event.target.value)}
-          ></Input>
-          <Button
-            onClick={() => {
-              if (activeID) {
-                tree.setStatus(activeID, newStatus)
-                setTree(tree)
-                setJSX(tree.render(hideEmptyNodes))
-              } else {
-                alert("no active Node found")
-              }
-            }}
-          >
-            Set active Node´s status
-          </Button>
-        </InputGroup>
-
-        <Button
-          color="danger"
-          onClick={() => {
-            confirm({
-              title: "Do you want to delete the Tree?",
-              message: "This action cannot be undone",
-              confirmText: "reset/delete Tree",
-              confirmColor: "danger",
-            }).then((isConfirmed: boolean) => {
-              if (isConfirmed) {
-                const newTree = new BinaryTreeNode(rootID, "", callback)
-                setTree(newTree)
-                setJSX(newTree.render(hideEmptyNodes))
+        <Row className="pb-2 mb-2 border-bottom">
+          <Col className="d-grid">
+            <Button
+              color="danger"
+              onClick={() => {
+                confirm({
+                  title: "Do you want to delete the Tree?",
+                  message: "This action cannot be undone",
+                  confirmText: "reset/delete Tree",
+                  confirmColor: "danger",
+                }).then((isConfirmed: boolean) => {
+                  if (isConfirmed) {
+                    const newTree = new BinaryTreeNode(rootID, "", callback)
+                    updateTree(newTree)
+                    setActiveID(rootID)
+                  }
+                })
+              }}
+            >
+              reset Tree
+            </Button>
+          </Col>
+          <Col className="d-grid">
+            <Button
+              color="danger"
+              onClick={() => {
+                if (!activeID) {
+                  return
+                }
+                const newTree =
+                  tree.remove(activeID) ??
+                  new BinaryTreeNode(rootID, "", callback)
+                updateTree(newTree)
                 setActiveID(rootID)
-              }
-            })
-          }}
-        >
-          reset Tree
-        </Button>
+              }}
+            >
+              remove active Node
+            </Button>
+          </Col>
+          <Col className="d-grid">
+            <CopyToClipboard text={exportTreeAsString(tree)}>
+              <Button>Copy to Clipboard</Button>
+            </CopyToClipboard>
+          </Col>
+        </Row>
 
-        <Button
-          color="danger"
-          onClick={() => {
-            if (!activeID) {
-              return
-            }
-            const newTree =
-              tree.remove(activeID) ?? new BinaryTreeNode(rootID, "", callback)
-            setTree(newTree)
-            setJSX(newTree.render(hideEmptyNodes))
-            setActiveID(rootID)
-          }}
-        >
-          remove active Node
-        </Button>
+        <Row className="pb-2 mb-2 border-bottom">
+          <Col>
+            <InputGroup>
+              <Input
+                value={newValue}
+                onChange={(event) => setNewValue(event.target.value)}
+                type="text"
+                placeholder="value for node"
+                ref={textInput}
+              />
 
-        <CopyToClipboard text={exportTreeAsString(tree)}>
-          <Button>Copy serialized Tree to Clipboard</Button>
-        </CopyToClipboard>
+              <Button
+                onClick={() => {
+                  if (activeID && newValue) {
+                    tree.setValueOfNode(activeID, newValue)
+                    updateTree(tree)
+                  } else {
+                    alert("no active Node found or no/empty new value")
+                  }
+                }}
+              >
+                Set active Node´s value
+              </Button>
+            </InputGroup>
+          </Col>
+          <Col>
+            <InputGroup>
+              <Input
+                value={newStatus}
+                onChange={(event) => setNewStatus(event.target.value)}
+                type="text"
+                placeholder="status for node"
+              />
+              <Button
+                onClick={() => {
+                  if (activeID) {
+                    tree.setStatus(activeID, newStatus)
+                    updateTree(tree)
+                  } else {
+                    alert("no active Node found")
+                  }
+                }}
+              >
+                Set active Node´s status
+              </Button>
+            </InputGroup>
+          </Col>
+        </Row>
 
         <InputGroup>
           <Input
@@ -186,11 +210,7 @@ export default function BinaryTree({ hidden }: Props) {
         </InputGroup>
         {!!traversalOutput && (
           <Container className="d-flex">
-            <Button
-              close
-              onClick={() => setTraversalOutput("")}
-              size="sm"
-            ></Button>
+            <Button close onClick={() => setTraversalOutput("")} size="sm" />
             <p>
               <span className="fw-bold">Output:</span> {traversalOutput}
             </p>
@@ -225,13 +245,19 @@ export default function BinaryTree({ hidden }: Props) {
                   setHideEmptyNodes(!hideEmptyNodes)
                 }}
               />
-              <Label check>Hide empty nodes</Label>
+              <Label
+                check
+                onClick={() => {
+                  setJSX(tree.render(!hideEmptyNodes))
+                  setHideEmptyNodes(!hideEmptyNodes)
+                }}
+              >
+                Hide empty nodes
+              </Label>
             </FormGroup>
           </Col>
         </Row>
       </Container>
-
-      <hr />
 
       <div id="react-tree-vis" style={{ zoom: zoomLevel }}>
         <ul>{JSX}</ul>

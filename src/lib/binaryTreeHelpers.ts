@@ -8,7 +8,7 @@ export function exportTreeAsString(tree: BinaryTreeNode) {
   return compressTreeString(JSON.stringify(tree, compressor))
 }
 
-export function compressTreeString(string: string) {
+function compressTreeString(string: string) {
   return string
     .replaceAll('"left"', '"l"')
     .replaceAll('"right"', '"t"')
@@ -16,7 +16,7 @@ export function compressTreeString(string: string) {
     .replaceAll('"value"', '"v"')
 }
 
-export function decompressTreeString(string: string) {
+function decompressTreeString(string: string) {
   return string
     .replaceAll('"l"', '"left"')
     .replaceAll('"t"', '"right"')
@@ -24,7 +24,7 @@ export function decompressTreeString(string: string) {
     .replaceAll('"v"', '"value"')
 }
 
-export function compressor(
+function compressor(
   key: string,
   value: string | number | undefined | null | BinaryTreeNode
 ) {
@@ -41,8 +41,8 @@ export function compressor(
   return value
 }
 
-export function reviver(
-  key: string,
+function reviver(
+  _: string,
   value: string | number | undefined | null | BinaryTreeNode
 ) {
   if (value && typeof value === "object") {

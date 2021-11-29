@@ -1,4 +1,3 @@
-import "bootstrap/dist/css/bootstrap.min.css"
 import { useState } from "react"
 
 import BinaryTree from "./components/playground/BinaryTree"
@@ -9,17 +8,9 @@ import Aside from "./components/Aside"
 import Main from "./components/Main"
 
 import "./App.scss"
-
-export const content = {
-  pg_BinaryTree: null, // this is toggled differently to allow its state to be kept
-  t_binaryTreeAllgemein: <BinaryTreeTheory />,
-  t_binaryTreeTraversal: <BinaryTreeTraversal />,
-} as const
+import { Route, Routes } from "react-router-dom"
 
 export default function App() {
-  const [activeContent, setActiveContent] =
-    useState<keyof typeof content>("pg_BinaryTree")
-
   const [toggled, setToggled] = useState(false)
 
   const handleToggleSidebar = (
@@ -27,19 +18,18 @@ export default function App() {
   ) => {
     setToggled(value)
   }
+
   return (
     <div className="app">
-      <Aside
-        toggled={toggled}
-        handleToggleSidebar={handleToggleSidebar}
-        activeContent={activeContent}
-        setActiveContent={setActiveContent}
-      />
+      <Aside toggled={toggled} handleToggleSidebar={handleToggleSidebar} />
       <Main handleToggleSidebar={handleToggleSidebar}>
         <div>
-          {content[activeContent]}
-
-          <BinaryTree hidden={activeContent !== "pg_BinaryTree"}></BinaryTree>
+          <Routes>
+            <Route path="/btree/theory" element={<BinaryTreeTheory />} />
+            <Route path="/btree/traversal" element={<BinaryTreeTraversal />} />
+            <Route path="/playground/btree" element={<BinaryTree />} />
+            <Route path="*" element={<p>There's nothing here!</p>} />
+          </Routes>
         </div>
       </Main>
     </div>

@@ -5,9 +5,9 @@ import {
   UncontrolledCollapse,
   Row,
   Col,
-  FormGroup,
   Label,
   Input,
+  InputGroup,
 } from "reactstrap"
 import { loadTreeFromString } from "../../lib/binaryTreeHelpers"
 import { treePresets } from "../../lib/binaryTreePresets"
@@ -15,11 +15,9 @@ import { TreePreset } from "../../lib/binaryTreeTypes"
 import BinaryTreeNode from "./BinaryTreeNode"
 
 export default function LoadTreeSection({
-  setTree,
-  callback,
+  updateTree,
 }: {
-  setTree: (tree: BinaryTreeNode) => void
-  callback: any
+  updateTree: (tree: BinaryTreeNode) => void
 }) {
   const [importString, setImportString] = useState("")
   const [preset, setPreset] = useState("")
@@ -29,9 +27,7 @@ export default function LoadTreeSection({
       alert("You need to paste a String first.")
     } else {
       try {
-        const { id, value, status, left, right } =
-          loadTreeFromString(importString)
-        setTree(new BinaryTreeNode(id, value, callback, status, left, right))
+        updateTree(loadTreeFromString(importString))
       } catch (error) {
         console.error(error)
         alert("Failed to Load from String")
@@ -44,8 +40,7 @@ export default function LoadTreeSection({
       alert("Please Select a Preset first.")
     } else {
       try {
-        const { id, value, status, left, right } = loadTreeFromString(preset)
-        setTree(new BinaryTreeNode(id, value, callback, status, left, right))
+        updateTree(loadTreeFromString(preset))
       } catch (error) {
         console.error(error)
         alert("Failed to Load Preset")
@@ -55,32 +50,40 @@ export default function LoadTreeSection({
 
   return (
     <Container>
-      <Container className="d-flex justify-content-between p-0">
-        <h2>Load Tree</h2>
-        <Button outline id="toggleLoadSection" size="sm">
+      <Container
+        className="d-flex justify-content-between p-0"
+        id="toggleLoadSection"
+      >
+        <h3>Load Tree</h3>
+        <Button outline size="sm">
           Toggle
         </Button>
       </Container>
       <UncontrolledCollapse toggler="#toggleLoadSection">
         <Row>
           <Col>
-            <FormGroup>
-              <Label for="inputStringTree">Load Tree from String</Label>
+            <Label for="inputStringTree">from String</Label>
+            <InputGroup>
               <Input
                 id="inputStringTree"
-                name="text"
-                type="textarea"
+                name="tree-import"
+                type="text"
+                placeholder="exported tree string"
                 value={importString}
                 onChange={(event) => setImportString(event.target.value)}
               />
-              <Button color="primary" onClick={() => handleLoadFromString()}>
+              <Button
+                color="primary"
+                className="d-flex"
+                onClick={() => handleLoadFromString()}
+              >
                 Load from string
               </Button>
-            </FormGroup>
+            </InputGroup>
           </Col>
           <Col>
-            <FormGroup>
-              <Label for="treePresetSelect">Load Tree from Preset</Label>
+            <Label for="treePresetSelect">from Preset</Label>
+            <InputGroup>
               <Input
                 id="treePresetSelect"
                 name="select"
@@ -98,7 +101,7 @@ export default function LoadTreeSection({
               <Button color="primary" onClick={handleLoadFromPreset}>
                 Load from preset
               </Button>
-            </FormGroup>
+            </InputGroup>
           </Col>
         </Row>
       </UncontrolledCollapse>

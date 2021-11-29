@@ -28,7 +28,7 @@ export default function BinaryTreeTraversal() {
       <p>
         W = write / process current node
         <br />L = visit left child node/subtree [Recursion]
-        <br />R = visit right child node/subtree [Recursion] <hr />
+        <br />R = visit right child node/subtree [Recursion] <br />
         Only difference is when to write/process current node.
       </p>
     </>
