@@ -14,11 +14,11 @@ import { treePresets } from "../../lib/binaryTreePresets"
 import { TreePreset } from "../../lib/binaryTreeTypes"
 import BinaryTreeNode from "./BinaryTreeNode"
 
-export default function LoadTreeSection({
-  updateTree,
-}: {
+type Props = {
   updateTree: (tree: BinaryTreeNode) => void
-}) {
+}
+
+export default function LoadTreeSection({ updateTree }: Props) {
   const [importString, setImportString] = useState("")
   const [preset, setPreset] = useState("")
 

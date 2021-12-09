@@ -30,6 +30,7 @@ export default function BinaryTree() {
   const callback = (id: string) => {
     setActiveID(id)
     textInput.current?.focus()
+    console.log(textInput.current)
   }
 
   const [hideEmptyNodes, setHideEmptyNodes] = useState(false)
@@ -85,6 +86,15 @@ export default function BinaryTree() {
     window.localStorage.setItem("stored-tree", exportTreeAsString(tree))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exportTreeAsString(tree)])
+
+  const handleNodeValueChange = () => {
+    if (activeID && newValue) {
+      tree.setValueOfNode(activeID, newValue)
+      updateTree(tree)
+    } else {
+      alert("no active Node found or no/empty new value")
+    }
+  }
 
   return (
     <>
@@ -146,21 +156,17 @@ export default function BinaryTree() {
               <Input
                 value={newValue}
                 onChange={(event) => setNewValue(event.target.value)}
-                type="text"
-                placeholder="value for node"
-                ref={textInput}
-              />
-
-              <Button
-                onClick={() => {
-                  if (activeID && newValue) {
-                    tree.setValueOfNode(activeID, newValue)
-                    updateTree(tree)
-                  } else {
-                    alert("no active Node found or no/empty new value")
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    handleNodeValueChange()
                   }
                 }}
-              >
+                type="text"
+                placeholder="value for node"
+                innerRef={textInput}
+              />
+
+              <Button onClick={handleNodeValueChange}>
                 Set active Node´s value
               </Button>
             </InputGroup>

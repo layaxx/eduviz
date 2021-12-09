@@ -9,6 +9,8 @@ import Main from "./components/Main"
 
 import "./App.scss"
 import { Route, Routes } from "react-router-dom"
+import Overview from "./components/Overview"
+import RouteNotFound from "./components/RouteNotFound"
 
 export default function App() {
   const [toggled, setToggled] = useState(false)
@@ -25,10 +27,11 @@ export default function App() {
       <Main handleToggleSidebar={handleToggleSidebar}>
         <div>
           <Routes>
+            <Route path="/" element={<Overview />} />
             <Route path="/btree/theory" element={<BinaryTreeTheory />} />
             <Route path="/btree/traversal" element={<BinaryTreeTraversal />} />
             <Route path="/playground/btree" element={<BinaryTree />} />
-            <Route path="*" element={<p>There's nothing here!</p>} />
+            <Route path="*" element={<RouteNotFound />} />
           </Routes>
         </div>
       </Main>
