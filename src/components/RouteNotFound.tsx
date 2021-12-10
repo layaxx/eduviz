@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom"
-import { Button } from "reactstrap"
 
 export default function RouteNotFound() {
   const navigate = useNavigate()

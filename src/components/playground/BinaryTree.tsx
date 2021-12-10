@@ -18,7 +18,7 @@ import {
   loadTreeFromString,
 } from "../../lib/binaryTreeHelpers"
 import LoadTreeSection from "./LoadTreeSection"
-import { TraversalOption } from "../../lib/binaryTreeTypes"
+import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
 
 export default function BinaryTree() {
   const rootID = "0"
@@ -30,7 +30,6 @@ export default function BinaryTree() {
   const callback = (id: string) => {
     setActiveID(id)
     textInput.current?.focus()
-    console.log(textInput.current)
   }
 
   const [hideEmptyNodes, setHideEmptyNodes] = useState(false)
@@ -97,7 +96,31 @@ export default function BinaryTree() {
   }
 
   return (
-    <>
+    <div
+      tabIndex={0} /* required to listen for keydown events */
+      style={{ outline: "none" }}
+      onKeyDown={(event) => {
+        if (!tree || !activeID) return
+        try {
+          switch (event.key) {
+            case "ArrowLeft":
+              tree.navigate(activeID, NavDirection.LEFT)
+              break
+            case "ArrowRight":
+              tree.navigate(activeID, NavDirection.RIGHT)
+              break
+            case "ArrowUp":
+              tree.navigate(activeID, NavDirection.UP)
+              break
+          }
+        } catch (error) {
+          console.log(error)
+          alert(
+            "Error occurred during Navigation. See Console for additional Information."
+          )
+        }
+      }}
+    >
       <h2>Binary Tree Playground</h2>
       <LoadTreeSection updateTree={updateTree} />
 
@@ -265,9 +288,16 @@ export default function BinaryTree() {
         </Row>
       </Container>
 
+      <Container>
+        <small>
+          Hint: You can use <kbd>UP</kbd>, <kbd>RIGHT</kbd> and <kbd>LEFT</kbd>{" "}
+          Arrow-Keys to navigate between Nodes
+        </small>
+      </Container>
+
       <div id="react-tree-vis" style={{ zoom: zoomLevel }}>
         <ul>{JSX}</ul>
       </div>
-    </>
+    </div>
   )
 }

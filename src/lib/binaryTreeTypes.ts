@@ -8,3 +8,10 @@ export type TreePreset = {
   name: string
   string: string
 }
+
+export enum NavDirection {
+  UP,
+  DOWN,
+  LEFT,
+  RIGHT,
+}

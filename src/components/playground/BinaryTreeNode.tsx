@@ -1,4 +1,4 @@
-import { TraversalOption } from "../../lib/binaryTreeTypes"
+import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
 
 export default class BinaryTreeNode {
   left: BinaryTreeNode | null
@@ -44,6 +44,43 @@ export default class BinaryTreeNode {
           left.right
         )
       : null
+  }
+
+  navigate(fromID: string, direction: NavDirection) {
+    if (fromID === this.id) {
+      switch (direction) {
+        case NavDirection.LEFT:
+          if (this.left) {
+            this.callback(this.left.id)
+            return
+          }
+          throw new Error("Node has no left child")
+        case NavDirection.RIGHT:
+          if (this.right) {
+            this.callback(this.right.id)
+            return
+          }
+          throw new Error("Node has no right child")
+        default:
+          throw new Error("Invalid Direction " + direction)
+      }
+    } else {
+      switch (direction) {
+        case NavDirection.UP:
+          if (this.left?.id === fromID || this.right?.id === fromID) {
+            this.callback(this.id)
+            return
+          }
+          break
+        case NavDirection.LEFT:
+        case NavDirection.RIGHT:
+          break
+        default:
+          throw new Error("Invalid Direction " + direction)
+      }
+      this.right?.navigate(fromID, direction)
+      this.left?.navigate(fromID, direction)
+    }
   }
 
   traverse(mode: TraversalOption) {
