@@ -59,7 +59,8 @@ export default function BinaryTree() {
     if (!newTree.render) {
       const { id, value, status, left, right } = newTree
       newTree = new BinaryTreeNode(id, value, callback, status, left, right)
-      newTree.setIsHighlighted(rootID, true)
+      newTree.setIsHighlighted(id, true)
+      setActiveID(id)
     }
     setTree(newTree)
     setJSX(newTree.render(hideEmptyNodes))
@@ -113,16 +114,20 @@ export default function BinaryTree() {
       style={{ outline: "none" }}
       onKeyDown={(event) => {
         if (!tree || !activeID) return
+
         try {
           switch (event.key) {
             case "ArrowLeft":
               tree.navigate(activeID, NavDirection.LEFT)
+              event.preventDefault()
               break
             case "ArrowRight":
               tree.navigate(activeID, NavDirection.RIGHT)
+              event.preventDefault()
               break
             case "ArrowUp":
               tree.navigate(activeID, NavDirection.UP)
+              event.preventDefault()
               break
           }
         } catch (error) {
@@ -133,7 +138,7 @@ export default function BinaryTree() {
           ) {
             return singleAlert("You have reached the end of the Tree.", "info")
           }
-          console.log(error)
+          console.error(error)
           singleAlert(
             "Error occurred during Navigation. See Console for additional Information."
           )
@@ -161,6 +166,9 @@ export default function BinaryTree() {
                     const newTree = new BinaryTreeNode(rootID, "", callback)
                     updateTree(newTree)
                     setActiveID(rootID)
+
+                    // Refocus on Value input
+                    textInput.current?.focus()
                   }
                 })
               }}
@@ -179,7 +187,7 @@ export default function BinaryTree() {
                   tree.remove(activeID) ??
                   new BinaryTreeNode(rootID, "", callback)
                 updateTree(newTree)
-                setActiveID(rootID)
+                setActiveID(newTree.id || rootID)
               }}
             >
               remove active Node
