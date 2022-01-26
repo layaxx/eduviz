@@ -19,6 +19,7 @@ import {
 } from "../../lib/binaryTreeHelpers"
 import LoadTreeSection from "./LoadTreeSection"
 import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
+import { toast } from "react-toastify"
 
 export default function BinaryTree() {
   const rootID = "0"
@@ -91,8 +92,17 @@ export default function BinaryTree() {
       tree.setValueOfNode(activeID, newValue)
       updateTree(tree)
     } else {
-      alert("no active Node found or no/empty new value")
+      singleAlert("no active Node found or no/empty new value")
     }
+  }
+
+  const singleAlert = (
+    msg: string,
+    mode?: "error" | "warning" | "info" | "success"
+  ) => {
+    toast.dismiss()
+    toast.clearWaitingQueue()
+    toast[mode ?? "error"](msg)
   }
 
   return (
@@ -114,8 +124,15 @@ export default function BinaryTree() {
               break
           }
         } catch (error) {
+          if (
+            new Set(["Node has no left child", "Node has no right child"]).has(
+              (error as Error).message
+            )
+          ) {
+            return singleAlert("You have reached the end of the Tree.", "info")
+          }
           console.log(error)
-          alert(
+          singleAlert(
             "Error occurred during Navigation. See Console for additional Information."
           )
         }
@@ -208,7 +225,7 @@ export default function BinaryTree() {
                     tree.setStatus(activeID, newStatus)
                     updateTree(tree)
                   } else {
-                    alert("no active Node found")
+                    singleAlert("no active Node found")
                   }
                 }}
               >

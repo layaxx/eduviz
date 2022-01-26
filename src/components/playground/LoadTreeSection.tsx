@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { toast } from "react-toastify"
 import {
   Container,
   Button,
@@ -24,26 +25,26 @@ export default function LoadTreeSection({ updateTree }: Props) {
 
   const handleLoadFromString = () => {
     if (importString === "") {
-      alert("You need to paste a String first.")
+      toast.error("You need to paste a String first.")
     } else {
       try {
         updateTree(loadTreeFromString(importString))
       } catch (error) {
         console.error(error)
-        alert("Failed to Load from String")
+        toast.error("Failed to Load from String")
       }
     }
   }
 
   const handleLoadFromPreset = () => {
     if (preset === "") {
-      alert("Please Select a Preset first.")
+      toast.error("Please Select a Preset first.")
     } else {
       try {
         updateTree(loadTreeFromString(preset))
       } catch (error) {
         console.error(error)
-        alert("Failed to Load Preset")
+        toast.error("Failed to Load Preset")
       }
     }
   }

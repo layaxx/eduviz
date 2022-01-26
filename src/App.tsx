@@ -8,9 +8,12 @@ import Aside from "./components/Aside"
 import Main from "./components/Main"
 
 import "./App.scss"
+import "react-toastify/dist/ReactToastify.css"
+
 import { Route, Routes } from "react-router-dom"
 import Overview from "./components/Overview"
 import RouteNotFound from "./components/RouteNotFound"
+import { ToastContainer } from "react-toastify"
 
 export default function App() {
   const [toggled, setToggled] = useState(false)
@@ -33,6 +36,8 @@ export default function App() {
             <Route path="/playground/btree" element={<BinaryTree />} />
             <Route path="*" element={<RouteNotFound />} />
           </Routes>
+
+          <ToastContainer limit={2} />
         </div>
       </Main>
     </div>
