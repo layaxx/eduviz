@@ -46,6 +46,15 @@ export default class BinaryTreeNode {
       : null
   }
 
+  asArray(): any[] {
+    return [
+      this.value,
+      this.status,
+      this.left?.asArray(),
+      this.right?.asArray(),
+    ]
+  }
+
   navigate(fromID: string, direction: NavDirection) {
     if (fromID === this.id) {
       switch (direction) {

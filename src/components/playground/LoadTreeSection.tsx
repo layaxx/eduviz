@@ -30,7 +30,11 @@ export default function LoadTreeSection({ updateTree }: Props) {
       toast.error("You need to paste a String first.")
     } else {
       try {
-        updateTree(loadTreeFromString(importString))
+        const newTree = loadTreeFromString(importString)
+
+        console.log(newTree)
+
+        updateTree(newTree)
       } catch (error) {
         console.error(error)
         toast.error("Failed to Load from String")

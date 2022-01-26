@@ -1,59 +1,53 @@
 import BinaryTreeNode from "../components/playground/BinaryTreeNode"
 
 export function loadTreeFromString(string: string) {
-  return JSON.parse(decompressTreeString(string), reviver)
+  return JSON.parse(decompressTreeString(string), reviver) as BinaryTreeNode
 }
 
 export function exportTreeAsString(tree: BinaryTreeNode) {
-  return compressTreeString(JSON.stringify(tree, compressor))
+  return compressTreeString(JSON.stringify(tree.asArray()))
 }
 
 function compressTreeString(string: string) {
   return string
-    .replaceAll('"left"', '"l"')
-    .replaceAll('"right"', '"t"')
-    .replaceAll('"status"', '"s"')
-    .replaceAll('"value"', '"v"')
+    .replaceAll('""', "")
+    .replaceAll("null", "")
+    .replaceAll("[,,,]", "")
 }
 
 function decompressTreeString(string: string) {
   return string
-    .replaceAll('"l"', '"left"')
-    .replaceAll('"t"', '"right"')
-    .replaceAll('"s"', '"status"')
-    .replaceAll('"v"', '"value"')
+    .replaceAll(",,", ",null,")
+    .replaceAll(",,", ",null,")
+    .replaceAll(",]", ",null]")
 }
 
-function compressor(
-  key: string,
-  value: string | number | undefined | null | BinaryTreeNode
-) {
-  const allowedKeys = ["left", "right", "status", "value", "id"]
-  if (!!key && allowedKeys.indexOf(key) === -1) {
-    return undefined
-  }
-  if ((key === "left" || key === "right") && value === null) {
-    return undefined
-  }
-  if ((key === "status" || key === "value") && value === "") {
-    return undefined
-  }
-  return value
-}
+let counter = 0
 
 function reviver(
   _: string,
-  value: string | number | undefined | null | BinaryTreeNode
+  valueParam: string | number | undefined | null | any[]
 ) {
-  if (value && typeof value === "object") {
-    const defaultNode = null
+  if (
+    valueParam &&
+    typeof valueParam === "object" &&
+    typeof valueParam[Symbol.iterator] === "function"
+  ) {
+    const [value, status, left, right] = valueParam
+    const defaultNode = {
+      left: null,
+      right: null,
+      value: "",
+      status: "",
+    }
+    counter++
     return {
-      left: value.left || defaultNode,
-      right: value.right || defaultNode,
-      status: value.status || "",
-      id: value.id,
-      value: value.value || "",
+      left: left || { ...defaultNode, id: counter + ".1" },
+      right: right || { ...defaultNode, id: counter + ".2" },
+      status: status || "",
+      id: "" + counter,
+      value: value || "",
     }
   }
-  return value
+  return valueParam
 }

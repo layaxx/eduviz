@@ -186,7 +186,12 @@ export default function BinaryTree() {
             </Button>
           </Col>
           <Col className="d-grid">
-            <CopyToClipboard text={exportTreeAsString(tree)}>
+            <CopyToClipboard
+              text={exportTreeAsString(tree)}
+              onCopy={() =>
+                toast("Successfully copied stringified tree to clipboard")
+              }
+            >
               <Button>Copy to Clipboard</Button>
             </CopyToClipboard>
           </Col>
