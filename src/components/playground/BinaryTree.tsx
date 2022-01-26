@@ -1,4 +1,7 @@
 import React, { useRef, useState } from "react"
+
+import { CopyToClipboard } from "react-copy-to-clipboard"
+import { toast } from "react-toastify"
 import {
   Button,
   Col,
@@ -9,17 +12,16 @@ import {
   Label,
   Row,
 } from "reactstrap"
-import BinaryTreeNode from "./BinaryTreeNode"
 import confirm from "reactstrap-confirm"
-import { CopyToClipboard } from "react-copy-to-clipboard"
-import "./BinaryTree.css"
+
 import {
   exportTreeAsString,
   loadTreeFromString,
 } from "../../lib/binaryTreeHelpers"
-import LoadTreeSection from "./LoadTreeSection"
 import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
-import { toast } from "react-toastify"
+import BinaryTreeNode from "./BinaryTreeNode"
+import "./BinaryTree.css"
+import LoadTreeSection from "./LoadTreeSection"
 
 export default function BinaryTree() {
   const rootID = "0"
