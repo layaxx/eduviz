@@ -2,58 +2,38 @@ import React, { useRef, useState } from "react"
 
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import { toast } from "react-toastify"
-import {
-  Button,
-  Col,
-  Container,
-  FormGroup,
-  Input,
-  InputGroup,
-  Label,
-  Row,
-} from "reactstrap"
+import { Button, Col, Container, Input, InputGroup, Row } from "reactstrap"
 import confirm from "reactstrap-confirm"
 
 import {
   exportTreeAsString,
   loadTreeFromString,
 } from "../../lib/binaryTreeHelpers"
-import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
+import { NavDirection } from "../../lib/binaryTreeTypes"
 import BinaryTreeNode from "./BinaryTreeNode"
 import "./BinaryTree.css"
+import HideEmptyNodesControl from "./config/HideEmptyNodesControl"
+import TraversalControl from "./config/TraversalControl"
+import ZoomControl from "./config/ZoomControl"
 import LoadTreeSection from "./LoadTreeSection"
 
 export default function BinaryTree() {
   const rootID = "0"
-
-  const [activeID, setActiveID] = React.useState<string | undefined>(rootID)
-
   const textInput = useRef<null | any>(null)
-
   const callback = (id: string) => {
     setActiveID(id)
     textInput.current?.focus()
   }
 
+  const [activeID, setActiveID] = React.useState<string | undefined>(rootID)
   const [hideEmptyNodes, setHideEmptyNodes] = useState(false)
-
   const [tree, setTree] = React.useState(
     new BinaryTreeNode(rootID, "", callback)
   )
   const [JSX, setJSX] = React.useState(tree.render(hideEmptyNodes))
-
   const [newValue, setNewValue] = React.useState("")
   const [newStatus, setNewStatus] = React.useState("")
-
-  const [zoomLevel, setZoomLevel] = useState(1)
-
-  const [traversalOption, setTraversalOption] = useState<TraversalOption>(
-    TraversalOption.PREORDER
-  )
-
-  const [traversalOutput, setTraversalOutput] = useState("")
-
-  const traversalOptions = Object.values(TraversalOption)
+  const [zoomLevel, setZoomLevel] = useState(0)
 
   const updateTree = (newTree: BinaryTreeNode) => {
     if (!newTree.render) {
@@ -103,47 +83,63 @@ export default function BinaryTree() {
     msg: string,
     mode?: "error" | "warning" | "info" | "success"
   ) => {
-    toast.dismiss()
-    toast.clearWaitingQueue()
-    toast[mode ?? "error"](msg)
+    const options = {
+      progress: 0,
+      type: mode ?? "error",
+      render: msg,
+      autoClose: 3000,
+    }
+    if (!toast.isActive("singleToast")) {
+      toast(msg, options)
+    } else {
+      toast.update("singleToast", options)
+    }
+  }
+
+  const navigationHandler: React.KeyboardEventHandler<HTMLDivElement> = (
+    event
+  ) => {
+    if (!tree || !activeID) return
+
+    try {
+      switch (event.key) {
+        case "ArrowLeft":
+          tree.navigate(activeID, NavDirection.LEFT)
+          event.preventDefault()
+          break
+        case "ArrowRight":
+          tree.navigate(activeID, NavDirection.RIGHT)
+          event.preventDefault()
+          break
+        case "ArrowUp":
+          if (activeID === tree.id) {
+            singleAlert("Cannot move UP from Root", "info")
+          } else {
+            tree.navigate(activeID, NavDirection.UP)
+          }
+          event.preventDefault()
+          break
+      }
+    } catch (error) {
+      if (
+        new Set(["Node has no left child", "Node has no right child"]).has(
+          (error as Error).message
+        )
+      ) {
+        return singleAlert("You have reached the end of the Tree.", "info")
+      }
+      console.error(error)
+      singleAlert(
+        "Error occurred during Navigation. See Console for additional Information."
+      )
+    }
   }
 
   return (
     <div
       tabIndex={0} /* required to listen for keydown events */
       style={{ outline: "none" }}
-      onKeyDown={(event) => {
-        if (!tree || !activeID) return
-
-        try {
-          switch (event.key) {
-            case "ArrowLeft":
-              tree.navigate(activeID, NavDirection.LEFT)
-              event.preventDefault()
-              break
-            case "ArrowRight":
-              tree.navigate(activeID, NavDirection.RIGHT)
-              event.preventDefault()
-              break
-            case "ArrowUp":
-              tree.navigate(activeID, NavDirection.UP)
-              event.preventDefault()
-              break
-          }
-        } catch (error) {
-          if (
-            new Set(["Node has no left child", "Node has no right child"]).has(
-              (error as Error).message
-            )
-          ) {
-            return singleAlert("You have reached the end of the Tree.", "info")
-          }
-          console.error(error)
-          singleAlert(
-            "Error occurred during Navigation. See Console for additional Information."
-          )
-        }
-      }}
+      onKeyDown={navigationHandler}
     >
       <h2>Binary Tree Playground</h2>
       <LoadTreeSection updateTree={updateTree} />
@@ -163,8 +159,7 @@ export default function BinaryTree() {
                   confirmColor: "danger",
                 }).then((isConfirmed: boolean) => {
                   if (isConfirmed) {
-                    const newTree = new BinaryTreeNode(rootID, "", callback)
-                    updateTree(newTree)
+                    updateTree(new BinaryTreeNode(rootID, "", callback))
                     setActiveID(rootID)
 
                     // Refocus on Value input
@@ -180,9 +175,7 @@ export default function BinaryTree() {
             <Button
               color="danger"
               onClick={() => {
-                if (!activeID) {
-                  return
-                }
+                if (!activeID) return
                 const newTree =
                   tree.remove(activeID) ??
                   new BinaryTreeNode(rootID, "", callback)
@@ -219,6 +212,7 @@ export default function BinaryTree() {
                 type="text"
                 placeholder="value for node"
                 innerRef={textInput}
+                autoFocus
               />
 
               <Button onClick={handleNodeValueChange}>
@@ -250,72 +244,20 @@ export default function BinaryTree() {
           </Col>
         </Row>
 
-        <InputGroup>
-          <Input
-            name="select"
-            type="select"
-            value={traversalOption}
-            onChange={(event) =>
-              setTraversalOption(event.target.value as TraversalOption)
-            }
-          >
-            {traversalOptions.map((option, index) => (
-              <option key={index}>{option}</option>
-            ))}
-          </Input>
-          <Button
-            onClick={() => setTraversalOutput(tree.traverse(traversalOption))}
-          >
-            Traverse Tree
-          </Button>
-        </InputGroup>
-        {!!traversalOutput && (
-          <Container className="d-flex">
-            <Button close onClick={() => setTraversalOutput("")} size="sm" />
-            <p>
-              <span className="fw-bold">Output:</span> {traversalOutput}
-            </p>
-          </Container>
-        )}
+        <TraversalControl tree={tree} />
 
         <Row>
           <Col>
-            <FormGroup>
-              <Label for="zoomLevel">
-                Zoom Level [does not work in Firefox]
-              </Label>
-              <Input
-                id="zoomLevel"
-                name="range"
-                type="range"
-                min={0.1}
-                max={4}
-                step={0.1}
-                value={zoomLevel}
-                onChange={(event) => setZoomLevel(Number(event.target.value))}
-              />
-            </FormGroup>
+            <ZoomControl zoomLevel={zoomLevel} setZoomLevel={setZoomLevel} />
           </Col>
-          <Col style={{ alignSelf: "center" }}>
-            <FormGroup check>
-              <Input
-                type="checkbox"
-                checked={hideEmptyNodes}
-                onChange={() => {
-                  setJSX(tree.render(!hideEmptyNodes))
-                  setHideEmptyNodes(!hideEmptyNodes)
-                }}
-              />
-              <Label
-                check
-                onClick={() => {
-                  setJSX(tree.render(!hideEmptyNodes))
-                  setHideEmptyNodes(!hideEmptyNodes)
-                }}
-              >
-                Hide empty nodes
-              </Label>
-            </FormGroup>
+          <Col>
+            <HideEmptyNodesControl
+              callback={() => {
+                setJSX(tree.render(!hideEmptyNodes))
+                setHideEmptyNodes(!hideEmptyNodes)
+              }}
+              hideEmptyNodes={hideEmptyNodes}
+            />
           </Col>
         </Row>
       </Container>
@@ -323,11 +265,12 @@ export default function BinaryTree() {
       <Container>
         <small>
           Hint: You can use <kbd>UP</kbd>, <kbd>RIGHT</kbd> and <kbd>LEFT</kbd>{" "}
-          Arrow-Keys to navigate between Nodes
+          Arrow-Keys to navigate between Nodes. <br />
+          [Focus must be on one Node or the Value Text field]
         </small>
       </Container>
 
-      <div id="react-tree-vis" style={{ zoom: zoomLevel }}>
+      <div id="react-tree-vis" style={{ zoom: Math.exp(zoomLevel) }}>
         <ul>{JSX}</ul>
       </div>
     </div>
