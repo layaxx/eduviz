@@ -15,3 +15,10 @@ export enum NavDirection {
   LEFT,
   RIGHT,
 }
+
+export type TreeAsArray = [
+  string,
+  string,
+  TreeAsArray | undefined,
+  TreeAsArray | undefined
+]

@@ -1,4 +1,8 @@
-import { NavDirection, TraversalOption } from "../../lib/binaryTreeTypes"
+import {
+  NavDirection,
+  TraversalOption,
+  TreeAsArray,
+} from "../../lib/binaryTreeTypes"
 
 export default class BinaryTreeNode {
   left: BinaryTreeNode | null
@@ -46,7 +50,7 @@ export default class BinaryTreeNode {
       : null
   }
 
-  asArray(): any[] {
+  asArray(): TreeAsArray {
     return [
       this.value,
       this.status,

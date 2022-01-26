@@ -1,21 +1,22 @@
 import BinaryTreeNode from "../components/playground/BinaryTreeNode"
+import { TreeAsArray } from "./binaryTreeTypes"
 
-export function loadTreeFromString(string: string) {
-  return JSON.parse(decompressTreeString(string), reviver) as BinaryTreeNode
+export function loadTreeFromString(string: string): BinaryTreeNode {
+  return JSON.parse(decompressTreeString(string), reviver)
 }
 
-export function exportTreeAsString(tree: BinaryTreeNode) {
+export function exportTreeAsString(tree: BinaryTreeNode): string {
   return compressTreeString(JSON.stringify(tree.asArray()))
 }
 
-function compressTreeString(string: string) {
+function compressTreeString(string: string): string {
   return string
     .replaceAll('""', "")
     .replaceAll("null", "")
     .replaceAll("[,,,]", "")
 }
 
-function decompressTreeString(string: string) {
+function decompressTreeString(string: string): string {
   return string
     .replaceAll(",,", ",null,")
     .replaceAll(",,", ",null,")
@@ -26,7 +27,7 @@ let counter = 0
 
 function reviver(
   _: string,
-  valueParam: string | number | undefined | null | any[]
+  valueParam: string | number | undefined | null | TreeAsArray
 ) {
   if (
     valueParam &&
